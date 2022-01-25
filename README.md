@@ -20,4 +20,5 @@ docker network inspect elastic
 * https://www.elastic.co/guide/en/elasticsearch/reference/7.16/security-minimal-setup.html
 * https://github.com/elastic/stack-docs/blob/main/docs/en/getting-started/get-started-docker.asciidoc
 * https://www.elastic.co/guide/en/elasticsearch/reference/7.16/docker.html
+* https://pulsar.apache.org/docs/en/io-elasticsearch-sink/
 
