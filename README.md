@@ -18,7 +18,82 @@ docker-compose up -d
 
 docker ps
 docker-compose ps
+````
 
+### Deploy Sink
+
+````
+
+bin/pulsar-admin sinks stop --tenant public --namespace default --name elasticsearch-sink
+bin/pulsar-admin sinks delete --tenant public --namespace default --name elasticsearch-sink
+
+bin/pulsar-admin sinks create --archive ./connectors/pulsar-io-elastic-search-2.9.1.nar --tenant public --namespace default --name elasticsearch-sink --sink-config-file conf/elastic-sink.conf --inputs persistent://public/default/iotjetsonjson --parallelism 1
+
+bin/pulsar-admin sinks status --tenant public --namespace default --name elasticsearch-sink
+
+{
+  "numInstances" : 1,
+  "numRunning" : 1,
+  "instances" : [ {
+    "instanceId" : 0,
+    "status" : {
+      "running" : true,
+      "error" : "",
+      "numRestarts" : 0,
+      "numReadFromPulsar" : 6,
+      "numSystemExceptions" : 0,
+      "latestSystemExceptions" : [ ],
+      "numSinkExceptions" : 0,
+      "latestSinkExceptions" : [ ],
+      "numWrittenToSink" : 6,
+      "lastReceivedTime" : 1643308578837,
+      "workerId" : "c-standalone-fw-127.0.0.1-8080"
+    }
+  } ]
+}
+
+bin/pulsar-admin sinks get --tenant public --namespace default --name elasticsearch-sink
+
+{
+  "tenant": "public",
+  "namespace": "default",
+  "name": "elasticsearch-sink",
+  "className": "org.apache.pulsar.io.elasticsearch.ElasticSearchSink",
+  "sourceSubscriptionPosition": "Latest",
+  "inputs": [
+    "persistent://public/default/iotjetsonjson"
+  ],
+  "inputSpecs": {
+    "persistent://public/default/iotjetsonjson": {
+      "isRegexPattern": false,
+      "schemaProperties": {},
+      "consumerProperties": {},
+      "poolMessages": false
+    }
+  },
+  "configs": {
+    "password": "changeme",
+    "elasticSearchUrl": "http://pulsar1:9200",
+    "indexName": "my_index",
+    "username": "elastic"
+  },
+  "parallelism": 1,
+  "processingGuarantees": "ATLEAST_ONCE",
+  "retainOrdering": false,
+  "autoAck": true
+}
+
+tail -500 logs/functions/public/default/elasticsearch-sink/elasticsearch-sink-0.log 
+
+2022-01-27T12:49:43,662-0500 [pulsar-client-io-1-2] INFO  org.apache.pulsar.client.impl.ConsumerImpl - [persistent://public/default/iotjetsonjson][public/default/elasticsearch-sink] Subscribed to topic on 127.0.0.1/127.0.0.1:6650 -- consumer: 0
+2022-01-27T13:26:12,202-0500 [pulsar-client-io-1-2] INFO  com.scurrilous.circe.checksum.Crc32cIntChecksum - SSE4.2 CRC32C provider initialized
+2022-01-27T13:26:12,239-0500 [public/default/elasticsearch-sink-0] INFO  org.apache.pulsar.client.impl.schema.AutoConsumeSchema - Configure topic schema \x00\x00\x00\x00\x00\x00\x00\x00 for topic persistent://public/default/iotjetsonjson : {"type":"record","name":"IoTMessage","namespace":"io.streamnative.examples.oauth2","fields":[{"name":"camera","type":["null","string"],"default":null},{"name":"cpu","type":"double"},{"name":"cputemp","type":["null","string"],"default":null},{"name":"cputempf","type":["null","string"],"default":null},{"name":"diskusage","type":["null","string"],"default":null},{"name":"filename","type":["null","string"],"default":null},{"name":"gputemp","type":["null","string"],"default":null},{"name":"gputempf","type":["null","string"],"default":null},{"name":"host","type":["null","string"],"default":null},{"name":"host_name","type":["null","string"],"default":null},{"name":"imageinput","type":["null","string"],"default":null},{"name":"ipaddress","type":["null","string"],"default":null},{"name":"macaddress","type":["null","string"],"default":null},{"name":"memory","type":"double"},{"name":"networktime","type":"double"},{"name":"runtime","type":["null","string"],"default":null},{"name":"systemtime","type":["null","string"],"default":null},{"name":"te","type":["null","string"],"default":null},{"name":"top1","type":["null","string"],"default":null},{"name":"top1pct","type":"double"},{"name":"uuid","type":["null","string"],"default":null}]}
+
+````
+
+### To Shutdown
+
+````
 docker-compose down
 ````
 
